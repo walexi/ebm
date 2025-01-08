@@ -1,3 +1,5 @@
+# export ENABLE_PJRT_COMPATIBILITY=1 # enable compatibility with jaxlib # https://developer.apple.com/metal/jax/ 
+
 VENV := venv
 TESTS_FILES := $(wildcard *_test.py)
 
@@ -8,10 +10,10 @@ $(VENV)/bin/activate: requirements.txt
 	./$(VENV)/bin/python3 -m pip install --upgrade pip
 	./$(VENV)/bin/pip install -r requirements.txt
 
-venv: $(VENV)/bin/activate
+venv: $(VENV)/bin/activate 
 
-test: $(TESTS_FILES) $(VENV) venv
-	test -d $(TESTS_FILES) || ./$(VENV)/bin/python3 -m unittest discover . -p='*_test.py'
+test: $(TESTS_FILES) venv
+	test -d $(TESTS_FILES) || $(VENV)/bin/python3 -m unittest discover . -p='*_test.py'
 
 run: venv
 	./$(VENV)/bin/python3 main.py
@@ -20,4 +22,4 @@ clean:
 	rm -rf $(VENV)
 	find . -type f -name '*.pyc' -delete
 
-.PHONY: run clean tests all venv
+.PHONY: run clean all venv
