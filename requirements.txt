@@ -1,0 +1,6 @@
+numpy 
+wheel
+jax-metal #for jax on mac 
+flax
+datasets
+absl-py
