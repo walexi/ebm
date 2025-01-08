@@ -1,6 +1,9 @@
 numpy 
 wheel
-jax-metal #for jax on mac 
+jax-metal #==0.1.0 #for jax on mac 
+jax 
+jaxlib #>=v0.4.26
 flax
+optax
 datasets
 absl-py

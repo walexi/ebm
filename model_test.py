@@ -2,10 +2,11 @@ from absl.testing import absltest
 from absl.testing import parameterized
 import jax
 from jax import numpy as jnp
+import logging
 from model import create_model
 
 jax.config.update("jax_disable_most_optimizations", True)
-
+logging.getLogger('jax._src.xla_bridge').addFilter(lambda _: False)
 
 class ModelTest(parameterized.TestCase):
     """Test cases for CNN model definition."""
