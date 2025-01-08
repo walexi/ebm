@@ -11,7 +11,7 @@ $(VENV)/bin/activate: requirements.txt
 venv: $(VENV)/bin/activate
 
 test: $(TESTS_FILES) $(VENV) venv
-	test -d $(TESTS_FILES) || ./$(VENV)/bin/python3 -m unittest discover . $(TESTS_FILES)
+	test -d $(TESTS_FILES) || ./$(VENV)/bin/python3 -m unittest discover . -p='*_test.py'
 
 run: venv
 	./$(VENV)/bin/python3 main.py
