@@ -26,7 +26,6 @@ def ldmc(x: jax.Array, model: nnx.Module, params: Dict, step_size: int, steps: i
         dx = jax.grad(lambda x, p: -model.apply(p, x).sum(), argnums=0)(x, params)
         key, subkey = jax.random.split(key)
         jnp.clip(dx, -0.03, 0.03) # clip gradients
-        # x_k-1 - [step_size * grad(E(x_k-1))] + noise (std=0.05)
         # Algorithm 1 from https://yilundu.github.io/thesis.pdf
         x+=(-step_size * dx + jnp.sqrt(2) * step_size * jax.random.normal(subkey, x.shape))
         jnp.clip(x, -1, 1)
