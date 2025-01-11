@@ -23,7 +23,7 @@ def ldmc(x: jax.Array, model: nnx.Module, params: Dict, step_size: int, steps: i
     for _ in range(steps):
         # inputs.__add__(noise).clip(-1, 1)
         # grad(E(x_k-1))
-        dx = jax.grad(lambda x, p: -model.apply(p, x).sum(), argnums=0)(x, params)
+        dx = jax.grad(lambda x_, p: -model.apply(p, x_).sum(), argnums=0)(x, params)
         key, subkey = jax.random.split(key)
         jnp.clip(dx, -0.03, 0.03) # clip gradients
         # Algorithm 1 from https://yilundu.github.io/thesis.pdf
