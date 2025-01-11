@@ -4,4 +4,7 @@ jax
 jaxlib #>=v0.4.26
 flax
 optax
-datasets
+tensorboard
+torchvision
+matplotlib
+pytorch_lightning

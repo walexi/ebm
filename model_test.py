@@ -1,5 +1,4 @@
-from absl.testing import absltest
-from absl.testing import parameterized
+from absl.testing import absltest, parameterized
 import jax
 from jax import numpy as jnp
 import logging
