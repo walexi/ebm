@@ -17,20 +17,20 @@ algorithms = Enum("algorithm", [("LDMC", 1), ("HMC", 2)])
     @param steps: int - number of steps to take in langevin dynamics
     @return: jax.Array - sampled data
 """
-def ldmc(inputs: jax.Array, model: nnx.Module, params: Dict, step_size: int, steps: int) -> jax.Array:
+def ldmc(x: jax.Array, model: nnx.Module, params: Dict, step_size: int, steps: int) -> jax.Array:
     key = jax.random.key(0)
-    # iterate over steps, adding noise (drawn from a normal dist) to inputs
+    # iterate over steps, adding noise (drawn from a guassian dist) to x
     for _ in range(steps):
         # inputs.__add__(noise).clip(-1, 1)
         # grad(E(x_k-1))
-        dx = jax.grad(lambda x, p: -model.apply(p, x).sum(), argnums=0)(inputs, params)
+        dx = jax.grad(lambda x, p: -model.apply(p, x).sum(), argnums=0)(x, params)
         key, subkey = jax.random.split(key)
         jnp.clip(dx, -0.03, 0.03) # clip gradients
         # x_k-1 - [step_size * grad(E(x_k-1))] + noise (std=0.05)
-        inputs+=(-step_size * dx + 0.05*jax.random.normal(subkey, inputs.shape))
-        jnp.clip(inputs, -1, 1)
+        x+=(-step_size * dx + 0.05 * jax.random.normal(subkey, x.shape))
+        jnp.clip(x, -1, 1)
 
-    return inputs
+    return x
 
 def hmc() -> jax.Array:
     return []
