@@ -29,10 +29,10 @@ class SamplerTest(parameterized.TestCase):
     )
     def test_algos(self, method: algorithms, step_size: int, steps: int):
         """Test implemented sampling techniques."""
-        
+
         example = jnp.array(random.choice(self.ds)[0], dtype=jnp.float32).reshape(self.shape)
         sample = Sampler.sample_(example, self.model, self.params, method, step_size, steps)
-
+        # @TODO add more tests
         self.assertEqual(sample.shape, example.shape)
     
     
