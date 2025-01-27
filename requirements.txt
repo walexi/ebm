@@ -7,5 +7,4 @@ optax
 tensorboard
 torchvision
 matplotlib
-pytorch_lightning
 hydra-core
