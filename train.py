@@ -11,7 +11,7 @@ from typing import Any, Dict
 from tqdm import tqdm
 import numpy as np
 # https://yilundu.github.io/thesis.pdf
-# @TODO training seems very slow, remove dependence on torch ligthning
+# @TODO add callbacks to log samples, add validation loop, optimize training loop
 class Trainer:
     def __init__(self, model, params, logger, key):
         self.model = model
