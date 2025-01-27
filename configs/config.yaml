@@ -1,0 +1,18 @@
+name: energy model
+save_dir: ./logs
+batch_size: 16
+dataset_path: ./dataset/
+image_size: 28
+n_classes: 10
+channels: 1
+alpha: 0.235
+step_size: 0.003
+steps: 100
+lr : 0.001
+algortihms: 0
+buffer_size:  32
+sample_size: 16
+debug: False
+algorithm: 0
+max_epochs: 3
+log_interval: 10
