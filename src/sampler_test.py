@@ -47,7 +47,6 @@ class SamplerTest(parameterized.TestCase):
         self.sampler.buffer_size = buffer_size
         self.sampler.sample_size = sample_size
         sample = self.sampler.generate(step_size, steps, method)
-        # print(len(self.sampler.buffer))
         self.assertEqual(sample.shape, (sample_size,) + self.shape)
         self.assertBetween(len(self.sampler.buffer), 0, buffer_size)
 
