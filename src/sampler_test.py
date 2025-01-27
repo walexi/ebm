@@ -2,8 +2,8 @@ from absl.testing import absltest, parameterized
 import jax
 from jax import numpy as jnp
 import logging
-from model import create_model
-from sampler import Sampler, algorithms
+from src.model import create_model
+from src.sampler import Sampler, algorithms
 from torchvision.datasets import MNIST
 import random
 
@@ -21,14 +21,14 @@ class SamplerTest(parameterized.TestCase):
         self.shape = (self.img_size, self.img_size, 1)
         self.model = create_model(self.img_size, self.num_classes)
         self.params = self.model.init(jax.random.key(0), jnp.ones((1,) + self.shape))
-        self.sampler = Sampler(self.model, self.params, self.shape, jax.random.key(0)) 
+        self.sampler = Sampler(self.model, self.params, self.shape, jax.random.key(0))
 
     @parameterized.product(
         method=[algorithms.LDMC], step_size=[10, 20, 50], steps=[40, 100]
     )
     def test_algos(self, method: algorithms, step_size: int, steps: int):
         """Test implemented sampling techniques."""
-        example = jax.random.gumbel(jax.random.key(0), (1,)+self.shape)
+        example = jax.random.gumbel(jax.random.key(0), (1,) + self.shape)
         sample = Sampler.sample(
             example, self.model, self.params, method, step_size, steps
         )
@@ -36,8 +36,11 @@ class SamplerTest(parameterized.TestCase):
         self.assertEqual(sample.shape, example.shape)
 
     @parameterized.product(
-        method=[algorithms.LDMC], step_size=[10, 20, 50], 
-        steps=[40, 100], buffer_size=[40, 80], sample_size=[16, 32]
+        method=[algorithms.LDMC],
+        step_size=[10, 20, 50],
+        steps=[40, 100],
+        buffer_size=[40, 80],
+        sample_size=[16, 32],
     )
     def test_generate(self, buffer_size, sample_size, step_size, steps, method):
         """Test the generate method."""
@@ -47,6 +50,7 @@ class SamplerTest(parameterized.TestCase):
         # print(len(self.sampler.buffer))
         self.assertEqual(sample.shape, (sample_size,) + self.shape)
         self.assertBetween(len(self.sampler.buffer), 0, buffer_size)
+
 
 if __name__ == "__main__":
     absltest.main()

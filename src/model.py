@@ -1,7 +1,9 @@
 from flax import linen as nn
 
+
 class CNN(nn.Module):
     """A simple CNN model."""
+
     train: bool = True
     img_size: int = 32
     num_classes: int = 10
