@@ -3,7 +3,7 @@
 VENV := venv
 TESTS_FILES := $(wildcard *_test.py)
 
-all: venv
+setup: venv
 
 $(VENV)/bin/activate: requirements.txt
 	test -d $(VENV) || python3 -m venv $(VENV)
