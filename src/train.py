@@ -15,7 +15,6 @@ import numpy as np
 class Trainer:
     def __init__(self, model, params, logger, key):
         self.model = model
-        print("type", type(params))
         self.hparams = params
         self.key = key
         self.logger = logger
