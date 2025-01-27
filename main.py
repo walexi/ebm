@@ -1,5 +1,6 @@
-from train import Trainer
-from dataset import numpy_collate, FlattenAndCast
+from src.train import Trainer
+from src.dataset import numpy_collate, FlattenAndCast
+from src.model import create_model
 from torchvision import transforms, datasets
 
 import hydra
@@ -8,13 +9,11 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 
 from torch.utils.data import  DataLoader
-import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger
 import numpy as np
 import jax
 from jax import numpy as jnp
 import random
-from model import create_model
 
 @hydra.main(
     version_base=None,
