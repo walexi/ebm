@@ -34,7 +34,7 @@ class Trainer:
         self._configure_checkpointer()
 
     def _init_train_state(self):
-        n_devices = jax.local_device_count()
+        n_devices = jax.local_device_count(backends="gpu")
         self.logger.info(f"Number of devices found: {n_devices}")
         self.mesh = jax.make_mesh((n_devices,), ('batch',))
         replicaed_sharding = NamedSharding(self.mesh, P())
@@ -97,6 +97,7 @@ class Trainer:
             )
 
             # evaluation loop
+            running_loss = 0.0
             for (i, (batch, _)), _key in tqdm(zip(enumerate(val_loader), jax.random.split(epoch_key, len(val_loader))), leave=False, position=1, total=len(val_loader)):
                 batch_x = jax.device_put(batch,  sharding)
                 z_plus = batch_x.reshape(-1, self.hparams.image_size, self.hparams.image_size, 1)
@@ -104,6 +105,7 @@ class Trainer:
                 z_minus = jr.normal(_key, z_plus.shape)
                 z = jnp.vstack([z_plus, z_minus])
                 loss =  Trainer.compute_loss(self.model_state.params, self.model_state, z, self.hparams.alpha, is_train=False)
+                running_loss += loss
                 self.writer.add_scalar(f"val_loss/epoch_{epoch}/", np.asarray(loss), i)
    
             self.checkpoint_mngr.save(
@@ -115,7 +117,7 @@ class Trainer:
                 )
 
             # track best model for checkpointing
-            best_model = min(best_model, (running_loss / len(train_loader), epoch))
+            best_model = min(best_model, (running_loss / len(val_loader), epoch))
             # logger.add_hparams(self.hparams, metric_dict, run_name=self.hparams.run_name)
             
             if epoch>0 and (self.hparams.log_interval%epoch) == 0:
