@@ -47,12 +47,6 @@ class Trainer:
         self.model_state = jax.device_put(model_state, replicaed_sharding)
         self.logger.info("Train state initialized")
 
-    def _configure_checkpointer(self):
-        options = ocp.CheckpointManagerOptions(max_to_keep=self.hparams.max_epochs, save_interval_steps=1, enable_async_checkpointing=True, create=True)
-        path = epath.Path(os.path.abspath(self.hparams.chkpt_dir))
-        self.checkpoint_mngr = ocp.CheckpointManager(path, options=options, item_names =('state', 'hparams'))
-        self.logger.info("Checkpointer configured")
-
     def _configure_optimizers(self, variables):
         self.optim = optax.adam(self.hparams.lr)
         self.opt_state = self.optim.init(variables)
@@ -69,6 +63,12 @@ class Trainer:
         )
         self.logger.info("Sampler configured")
 
+    def _configure_checkpointer(self):
+        options = ocp.CheckpointManagerOptions(max_to_keep=self.hparams.max_epochs, save_interval_steps=1, enable_async_checkpointing=True, create=True)
+        path = epath.Path(os.path.abspath(self.hparams.chkpt_dir))
+        self.checkpoint_mngr = ocp.CheckpointManager(path, options=options, item_names =('state', 'hparams'))
+        self.logger.info("Checkpointer configured")
+
     def fit(self, train_loader: Any, val_loader: Any):
         best_model = (float('inf'), 0)
         for epoch, epoch_key in tqdm(
@@ -79,7 +79,7 @@ class Trainer:
             sharding = NamedSharding(self.mesh, P('batch'))
             running_loss = 0.0
             for (i, (batch, _)), _key in tqdm(zip(enumerate(train_loader), jax.random.split(epoch_key, len(train_loader))), leave=False, position=1, total=len(train_loader)):
-                batch_x = jax.device_put(batch,  sharding)
+                batch_x = jax.device_put(batch,  sharding) # @TODO expensive transfer too frequent, move 
                 z_plus = batch_x.reshape(-1, self.hparams.image_size, self.hparams.image_size, 1)
                 z_plus += (jr.normal(_key, z_plus.shape) * 0.005)  # corrupt the original images with some random noise
                 z_minus = self.sampler.generate(self.hparams.step_size, self.hparams.steps)
