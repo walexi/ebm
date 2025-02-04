@@ -4,3 +4,4 @@ logs*
 data
 dataset
 outputs
+checkpoints*

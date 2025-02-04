@@ -123,8 +123,7 @@ class Trainer:
             # logger.add_hparams(self.hparams, metric_dict, run_name=self.hparams.run_name)
             
             if epoch>0 and (self.hparams.log_interval%epoch) == 0:
-                z = jr.normal(jax.random.key(0), z_plus.shape)
-                samples = Sampler.sample(z, self.model_state, self.hparams.step_size, self.hparams.steps)
+                samples = Trainer.generate(self.model_state, self.hparams.batch_size, self.hparams.image_size, self.hparams.step_size, self.hparams.steps)
                 self.writer.add_images(f"generated_samples/epoch_{epoch}", np.asarray(samples), dataformats="NHWC")
                 self.logger.info(f"samples logged to tensorboard {epoch}")
 
@@ -160,8 +159,7 @@ class Trainer:
     @staticmethod
     def generate(model_state, bs, img_size, step_size, steps):
         samples = jr.normal(jax.random.key(0), (bs, img_size, img_size, 1))
-        samples = Sampler.sample(samples, model_state, step_size, steps)
-        out = model_state.apply_fn({"params": model_state.params}, samples)
+        out = Sampler.sample(samples, model_state, step_size, steps)
         return out
     
     '''
