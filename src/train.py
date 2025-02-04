@@ -38,17 +38,13 @@ class Trainer:
         self.logger.info(f"Number of devices found: {n_devices}")
         self.mesh = jax.make_mesh((n_devices,), ('batch',))
         replicaed_sharding = NamedSharding(self.mesh, P())
-        if self.hparams.load_checkpoint:
-            self.model_state = load_checkpoint(self.hparams.chkpt_dir)
-            self.logger.info(f"Checkpoint loaded from {self.hparams.chkpt_dir}")
-        else:
-            self.key, model_key = jr.split(self.key)
-            variables = self.model.init(model_key, jnp.ones((1,) + self.hparams.shape))
-            self._configure_optimizers(variables)
-            model_state = train_state.TrainState.create(
-                apply_fn=self.model.apply, params=variables["params"], tx=self.optim
-            )
-            self.model_state = jax.device_put(model_state, replicaed_sharding)
+        self.key, model_key = jr.split(self.key)
+        variables = self.model.init(model_key, jnp.ones((1,) + self.hparams.shape))
+        self._configure_optimizers(variables)
+        model_state = train_state.TrainState.create(
+            apply_fn=self.model.apply, params=variables["params"], tx=self.optim
+        )
+        self.model_state = jax.device_put(model_state, replicaed_sharding)
         self.logger.info("Train state initialized")
 
     def _configure_checkpointer(self):
