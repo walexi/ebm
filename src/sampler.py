@@ -29,7 +29,7 @@ def ldmc(
         # grad(E(x_k-1))
         jnp.clip(x.__add__(jax.random.normal(sub_key, x.shape)), -1, 1)
         dx = jax.grad(
-            lambda x_, p: -model_state.apply_fn({"params": p}, x_).sum(), argnums=0
+            lambda x_, p: -model_state.apply_fn({"params": p}, x_).sum()
         )(x, model_state.params)
         jnp.clip(dx, -0.03, 0.03)  # clip gradients
         x += -step_size * dx
@@ -80,7 +80,7 @@ class Sampler:
             z = jax.random.uniform(subkey, (self.sample_size,) + self.shape)
 
         sample = self.sample(
-            z, self.model_state, method, step_size, steps
+            z, self.model_state, step_size, steps, method
         )  # sample_size * *shape
         self.buffer += jnp.split(sample, self.sample_size)
         # random.choices(self.buffer, k=self.buffer_size)
@@ -92,9 +92,9 @@ class Sampler:
     def sample(
         x: jnp.ndarray,
         model_state: nnx.Module,
-        method: algorithms,
         step_size: int,
         steps: int,
+        method: algorithms = algorithms.LDMC,
     ):
         if method == algorithms.LDMC:
             return ldmc(x, model_state, step_size, steps)

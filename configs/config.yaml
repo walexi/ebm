@@ -1,6 +1,9 @@
 name: energy model
-save_dir: ./logs
+log_dir: ./logs
+chkpt_dir: ./checkpoints
+save_best: True
 batch_size: 16
+load_checkpoint: False
 dataset_path: ./dataset/
 image_size: 28
 n_classes: 10
@@ -9,10 +12,9 @@ alpha: 0.235
 step_size: 0.003
 steps: 100
 lr : 0.001
-algortihms: 0
 buffer_size:  32
 sample_size: 16
 debug: False
 algorithm: 0
-max_epochs: 3
-log_interval: 10
+max_epochs: 2
+log_interval: 1

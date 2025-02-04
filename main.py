@@ -1,18 +1,18 @@
 from src.train import Trainer
-from src.dataset import numpy_collate, FlattenAndCast
+from src.utils import numpy_collate, FlattenAndCast
 from src.model import create_model
 from torchvision import transforms, datasets
-
 import hydra
 from omegaconf import DictConfig, OmegaConf, open_dict
-from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
-
 from torch.utils.data import DataLoader
 import numpy as np
 import jax
 from jax import numpy as jnp
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @hydra.main(
@@ -39,7 +39,7 @@ def main(hparams: DictConfig) -> None:
         batch_size=hparams.batch_size,
         num_workers=0,
         collate_fn=numpy_collate,
-        sampler=np.random.permutation(100),
+        sampler=np.random.permutation(100), #for debugging
     )
     val_dataloader = DataLoader(
         test_set,
@@ -51,9 +51,10 @@ def main(hparams: DictConfig) -> None:
 
     key = jax.random.key(0)
     model = create_model(hparams.image_size, hparams.n_classes)
-    logger = SummaryWriter(
-        f'{hparams.save_dir}/{datetime.now().strftime("%Y%m%d-%H%M%S")}'
-    )
+    
+    # logging.basicConfig(filename='myapp.log', level=logging.INFO)
+    # logger.info('Started')
+    # logger.info('Finished')
 
     with open_dict(hparams):
         hparams.shape = (hparams.image_size,) * 2 + (hparams.channels,)

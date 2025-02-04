@@ -8,3 +8,4 @@ tensorboard
 torchvision
 matplotlib
 hydra-core
+orbax-export
