@@ -5,7 +5,6 @@ jaxlib #>=v0.4.26
 flax
 optax
 tensorboard
-torchvision
 matplotlib
 hydra-core
 orbax-export

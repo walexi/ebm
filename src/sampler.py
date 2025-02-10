@@ -27,13 +27,14 @@ def ldmc(
     # iterate over steps, adding noise (drawn from a guassian dist) to x
     for sub_key in jax.random.split(key, steps):
         # grad(E(x_k-1))
-        jnp.clip(x.__add__(jax.random.normal(sub_key, x.shape)), -1, 1)
+        x+=jax.random.normal(sub_key, x.shape)*0.005
+        x = jnp.clip(x, -1, 1)
         dx = jax.grad(
             lambda x_, p: -model_state.apply_fn({"params": p}, x_).sum()
         )(x, model_state.params)
-        jnp.clip(dx, -0.03, 0.03)  # clip gradients
+        dx = jnp.clip(dx, -0.03, 0.03)  # clip gradients
         x += -step_size * dx
-        # jnp.clip(x, -1, 1)
+        x = jnp.clip(x, -1, 1)
 
     return x
 

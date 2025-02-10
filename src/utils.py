@@ -4,8 +4,6 @@ from torch.utils import data
 from torchvision.datasets import MNIST
 from jax import numpy as jnp
 import orbax.checkpoint as ocp
-from flax.training.train_state import TrainState
-from flax import nnx
 from typing import Any
 import os
 
